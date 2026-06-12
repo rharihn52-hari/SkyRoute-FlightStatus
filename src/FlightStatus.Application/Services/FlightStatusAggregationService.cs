@@ -2,6 +2,7 @@ using FlightStatus.Application.Interfaces;
 using FlightStatus.Domain.Enums;
 using FlightStatus.Domain.Models;
 using Microsoft.Extensions.Logging;
+using FlightStatusEnum = FlightStatus.Domain.Enums.FlightStatus;
 
 namespace FlightStatus.Application.Services;
 
@@ -97,7 +98,7 @@ public class FlightStatusAggregationService
         {
             FlightNumber = flightNumber,
             FlightDate = flightDate,
-            Status = FlightStatus.Unknown,
+            Status = FlightStatusEnum.Unknown,
             LastUpdatedUtc = DateTime.UtcNow,
             ProviderName = "None",
             Message = "Flight status unknown - no provider data available"

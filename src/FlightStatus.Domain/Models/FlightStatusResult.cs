@@ -1,4 +1,4 @@
-using FlightStatus.Domain.Enums;
+global using FlightStatusEnum = FlightStatus.Domain.Enums.FlightStatus;
 
 namespace FlightStatus.Domain.Models;
 
@@ -8,7 +8,7 @@ public record FlightStatusResult
 
     public DateOnly FlightDate { get; init; }
 
-    public FlightStatus Status { get; init; }
+    public FlightStatusEnum Status { get; init; }
 
     public DateTime LastUpdatedUtc { get; init; }
 

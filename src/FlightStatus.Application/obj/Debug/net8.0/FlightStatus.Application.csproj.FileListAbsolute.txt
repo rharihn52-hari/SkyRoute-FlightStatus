@@ -1,0 +1,16 @@
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightStatus.Application.csproj.AssemblyReference.cache
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightStatus.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightStatus.Application.AssemblyInfoInputs.cache
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightStatus.Application.AssemblyInfo.cs
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightStatus.Application.csproj.CoreCompileInputs.cache
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightStatus.Application.sourcelink.json
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\bin\Debug\net8.0\FlightStatus.Application.deps.json
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\bin\Debug\net8.0\FlightStatus.Application.dll
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\bin\Debug\net8.0\FlightStatus.Application.pdb
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\bin\Debug\net8.0\FlightStatus.Domain.dll
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\bin\Debug\net8.0\FlightStatus.Domain.pdb
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightSt.5112BEDC.Up2Date
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightStatus.Application.dll
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\refint\FlightStatus.Application.dll
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\FlightStatus.Application.pdb
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Application\obj\Debug\net8.0\ref\FlightStatus.Application.dll

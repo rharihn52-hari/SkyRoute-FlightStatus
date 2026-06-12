@@ -1,0 +1,150 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Application\\FlightStatus.Application.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Application\\FlightStatus.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Application\\FlightStatus.Application.csproj",
+        "projectName": "FlightStatus.Application",
+        "projectPath": "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Application\\FlightStatus.Application.csproj",
+        "packagesPath": "C:\\Users\\Hari Rajanala\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Hari Rajanala\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Domain\\FlightStatus.Domain.csproj": {
+                "projectPath": "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Domain\\FlightStatus.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Domain\\FlightStatus.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Domain\\FlightStatus.Domain.csproj",
+        "projectName": "FlightStatus.Domain",
+        "projectPath": "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Domain\\FlightStatus.Domain.csproj",
+        "packagesPath": "C:\\Users\\Hari Rajanala\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Hari Rajanala\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

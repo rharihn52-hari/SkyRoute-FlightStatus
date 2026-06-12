@@ -31,3 +31,19 @@ Reason:
 Needed support for Unknown responses, provider-specific details, and API documentation clarity.
 
 ---
+
+## Prompt 3
+
+Purpose:
+Implement stub providers (AeroTrack and QuickFlight) and flight status aggregation service.
+
+Accepted:
+Provider structure with deterministic hardcoded responses and aggregation logic using Task.WhenAll.
+
+Modified:
+Added comprehensive error handling in aggregation service to catch and log provider failures without failing the request.
+
+Reason:
+Challenge requires deterministic, testable behaviour and resilience to provider failures - core requirements from the PDF.
+
+---

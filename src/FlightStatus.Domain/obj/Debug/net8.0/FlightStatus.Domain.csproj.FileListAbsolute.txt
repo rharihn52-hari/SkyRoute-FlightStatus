@@ -1,0 +1,12 @@
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\FlightStatus.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\FlightStatus.Domain.AssemblyInfoInputs.cache
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\FlightStatus.Domain.AssemblyInfo.cs
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\FlightStatus.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\FlightStatus.Domain.sourcelink.json
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\bin\Debug\net8.0\FlightStatus.Domain.deps.json
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\bin\Debug\net8.0\FlightStatus.Domain.dll
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\bin\Debug\net8.0\FlightStatus.Domain.pdb
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\FlightStatus.Domain.dll
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\refint\FlightStatus.Domain.dll
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\FlightStatus.Domain.pdb
+C:\Users\Hari Rajanala\source\repos\SkyRoute-FlightStatus\src\FlightStatus.Domain\obj\Debug\net8.0\ref\FlightStatus.Domain.dll

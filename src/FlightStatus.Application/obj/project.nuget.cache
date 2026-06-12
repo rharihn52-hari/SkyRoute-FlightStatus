@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "a/Xwx2PzitE=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Hari Rajanala\\source\\repos\\SkyRoute-FlightStatus\\src\\FlightStatus.Application\\FlightStatus.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Hari Rajanala\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Hari Rajanala\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

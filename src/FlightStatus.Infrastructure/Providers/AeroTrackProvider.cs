@@ -2,6 +2,7 @@ using FlightStatus.Application.Interfaces;
 using FlightStatus.Domain.Enums;
 using FlightStatus.Domain.Models;
 using Microsoft.Extensions.Logging;
+using FlightStatusEnum = FlightStatus.Domain.Enums.FlightStatus;
 
 namespace FlightStatus.Infrastructure.Providers;
 
@@ -36,7 +37,7 @@ public class AeroTrackProvider : IFlightStatusProvider
             {
                 FlightNumber = "AI101",
                 FlightDate = flightDate,
-                Status = FlightStatus.Delayed,
+                Status = FlightStatusEnum.Delayed,
                 LastUpdatedUtc = DateTime.UtcNow.AddMinutes(-10),
                 ProviderName = "AeroTrack",
                 Gate = "A12",
@@ -48,7 +49,7 @@ public class AeroTrackProvider : IFlightStatusProvider
             {
                 FlightNumber = "AI202",
                 FlightDate = flightDate,
-                Status = FlightStatus.OnTime,
+                Status = FlightStatusEnum.OnTime,
                 LastUpdatedUtc = DateTime.UtcNow.AddMinutes(-15),
                 ProviderName = "AeroTrack",
                 Message = "Flight on schedule"

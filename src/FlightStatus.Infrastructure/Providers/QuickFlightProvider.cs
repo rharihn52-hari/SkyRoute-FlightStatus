@@ -2,6 +2,7 @@ using FlightStatus.Application.Interfaces;
 using FlightStatus.Domain.Enums;
 using FlightStatus.Domain.Models;
 using Microsoft.Extensions.Logging;
+using FlightStatusEnum = FlightStatus.Domain.Enums.FlightStatus;
 
 namespace FlightStatus.Infrastructure.Providers;
 
@@ -36,7 +37,7 @@ public class QuickFlightProvider : IFlightStatusProvider
             {
                 FlightNumber = "AI101",
                 FlightDate = flightDate,
-                Status = FlightStatus.Delayed,
+                Status = FlightStatusEnum.Delayed,
                 LastUpdatedUtc = DateTime.UtcNow.AddMinutes(-5),
                 ProviderName = "QuickFlight",
                 Message = "Flight running late"
@@ -45,7 +46,7 @@ public class QuickFlightProvider : IFlightStatusProvider
             {
                 FlightNumber = "BA303",
                 FlightDate = flightDate,
-                Status = FlightStatus.Cancelled,
+                Status = FlightStatusEnum.Cancelled,
                 LastUpdatedUtc = DateTime.UtcNow.AddMinutes(-20),
                 ProviderName = "QuickFlight",
                 Message = "Flight cancelled"
