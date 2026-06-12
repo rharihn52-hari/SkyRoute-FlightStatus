@@ -54,6 +54,24 @@ public class AeroTrackProvider : IFlightStatusProvider
                 ProviderName = "AeroTrack",
                 Message = "Flight on schedule"
             },
+            "AI303" => new FlightStatusResult
+            {
+                FlightNumber = "AI303",
+                FlightDate = flightDate,
+                Status = FlightStatusEnum.Cancelled,
+                LastUpdatedUtc = DateTime.UtcNow.AddMinutes(-20),
+                ProviderName = "AeroTrack",
+                Message = "Flight cancelled"
+            },
+            "AI404" => new FlightStatusResult
+            {
+                FlightNumber = "AI404",
+                FlightDate = flightDate,
+                Status = FlightStatusEnum.Diverted,
+                LastUpdatedUtc = DateTime.UtcNow.AddMinutes(-25),
+                ProviderName = "AeroTrack",
+                Message = "Flight diverted"
+            },
             _ => null
         };
     }

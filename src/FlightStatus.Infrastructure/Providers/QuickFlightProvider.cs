@@ -51,6 +51,15 @@ public class QuickFlightProvider : IFlightStatusProvider
                 ProviderName = "QuickFlight",
                 Message = "Flight cancelled"
             },
+            "QS101" => new FlightStatusResult
+            {
+                FlightNumber = "QS101",
+                FlightDate = flightDate,
+                Status = FlightStatusEnum.OnTime,
+                LastUpdatedUtc = DateTime.UtcNow.AddMinutes(-2),
+                ProviderName = "QuickFlight",
+                Message = "Flight on schedule"
+            },
             _ => null
         };
     }
