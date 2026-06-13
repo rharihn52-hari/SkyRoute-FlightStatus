@@ -1,6 +1,17 @@
 bin/
 obj/
 
+node_modules/
+
+dist/
+
+.vs/
+.vscode/
+
+coverage/
+bin/
+obj/
+
 .vs/
 .vscode/
 

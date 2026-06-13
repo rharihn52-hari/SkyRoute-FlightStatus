@@ -16,6 +16,112 @@ Needed explicit operational requirements and architectural guidance for consiste
 
 ---
 
+## Prompt 5
+
+Purpose:
+Create an OpenAPI/Swagger description for the flight status endpoint.
+
+Accepted:
+Added XML comments to API controllers and enabled Swagger in Program.cs.
+
+Rejected:
+Auto-generated overly broad models that exposed internal fields.
+
+Reason:
+Needed a minimal, secure surface area for clients.
+
+---
+
+## Prompt 6
+
+Purpose:
+Add logging and structured ILogger usage across the API and services.
+
+Accepted:
+Injected `ILogger<T>` into services and controllers; added key log points.
+
+Reason:
+Observability for failures and debugging during provider calls.
+
+---
+
+## Prompt 7
+
+Purpose:
+Improve input validation for flight number and date parsing.
+
+Accepted:
+Added model validation and explicit 400 responses for invalid input.
+
+Reason:
+Prevented ambiguous behavior when frontend passes malformed values.
+
+---
+
+## Prompt 8
+
+Purpose:
+Generate additional unit test cases for provider exception handling.
+
+Accepted:
+Added tests that simulate provider exceptions and verify aggregator resilience.
+
+Reason:
+Ensures API remains available when one provider fails.
+
+---
+
+## Prompt 9
+
+Purpose:
+Document frontend build and run steps for local development.
+
+Accepted:
+Added `npm install --prefix flight-status-ui` and `npm start --prefix flight-status-ui` to README.
+
+Reason:
+Make it trivial for new developers to run the UI.
+
+---
+
+## Prompt 10
+
+Purpose:
+Create deterministic stub provider responses for tests.
+
+Accepted:
+Implemented hardcoded provider responses and timestamp offsets to validate aggregator logic.
+
+Reason:
+Determinism simplifies unit test expectations.
+
+---
+
+## Prompt 11
+
+Purpose:
+Add CI-friendly test runner instructions and configuration notes.
+
+Accepted:
+Documented `dotnet test` usage and suggested GitHub Actions workflow steps (not added yet).
+
+Reason:
+Prepare repository for future CI automation.
+
+---
+
+## Prompt 12
+
+Purpose:
+Capture a short governance template for future prompt entries (Accepted/Rejected/Reason).
+
+Accepted:
+Standardized prompt entry format used throughout this file.
+
+Reason:
+Improves traceability and auditability of AI-driven changes.
+
+
 ## Prompt 2
 
 Purpose:
