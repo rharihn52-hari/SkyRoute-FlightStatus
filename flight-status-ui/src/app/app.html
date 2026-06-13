@@ -1,0 +1,81 @@
+<main class="app-shell">
+  <section class="hero-panel">
+    <div>
+      <p class="eyebrow">Flight status lookup</p>
+      <h1>Track flights, gates, and delay reasons in one place.</h1>
+      <p>Search a flight number and date to get the latest provider status, departure/arrival details, and any delay information.</p>
+    </div>
+  </section>
+
+  <section class="search-panel">
+    <form (submit)="searchStatus(); $event.preventDefault()" class="search-card" novalidate>
+      <div class="form-row">
+        <label for="flightNumber">Flight number</label>
+        <input
+          id="flightNumber"
+          type="text"
+          autocomplete="off"
+          placeholder="e.g. AI101"
+          [value]="flightNumber()"
+          (input)="flightNumber.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="flightDate">Departure date</label>
+        <input
+          id="flightDate"
+          type="date"
+          [value]="flightDate()"
+          (input)="flightDate.set($any($event.target).value)"
+          required
+        />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="loading()">Check status</button>
+      </div>
+    </form>
+
+    <div *ngIf="error()" class="feedback error-panel">{{ error() }}</div>
+
+    <section *ngIf="statusResult() as status" class="result-card">
+      <pre>{{ status | json }}</pre>
+      <div class="result-header">
+        <div>
+          <span [ngClass]="statusClass(status.status)">{{ status.status }}</span>
+          <h2>{{ status.flightNumber }} - {{ status.flightDate }}</h2>
+          <p class="provider-text">Provider: {{ status.providerName }}</p>
+        </div>
+      </div>
+
+      <div class="status-grid">
+        <div class="status-item" *ngIf="status.message">
+          <span class="label">Message</span>
+          <strong>{{ status.message }}</strong>
+        </div>
+
+        <div class="status-item" *ngIf="status.lastUpdatedUtc">
+          <span class="label">Last updated</span>
+          <strong>{{ status.lastUpdatedUtc | date:'short' }}</strong>
+        </div>
+
+        <div class="status-item" *ngIf="status.gate">
+          <span class="label">Gate</span>
+          <strong>{{ status.gate }}</strong>
+        </div>
+
+        <div class="status-item" *ngIf="status.terminal">
+          <span class="label">Terminal</span>
+          <strong>{{ status.terminal }}</strong>
+        </div>
+
+        <div class="status-item wide" *ngIf="status.delayReason">
+          <span class="label">Delay reason</span>
+          <strong>{{ status.delayReason }}</strong>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>

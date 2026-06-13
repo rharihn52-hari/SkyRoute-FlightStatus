@@ -1,6 +1,7 @@
 using FlightStatus.Application.Interfaces;
 using FlightStatus.Application.Services;
 using FlightStatus.Infrastructure.Providers;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,15 +18,31 @@ builder.Services.AddScoped<FlightStatusAggregationService>();
 
 // Add logging
 builder.Services.AddLogging();
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(
+        new JsonStringEnumConverter());
+});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularPolicy", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
+app.UseCors("AngularPolicy");
 
 // Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 
