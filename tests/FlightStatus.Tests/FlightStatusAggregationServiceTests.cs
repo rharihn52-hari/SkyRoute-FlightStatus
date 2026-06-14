@@ -11,43 +11,55 @@ namespace FlightStatus.Tests;
 
 public class FlightStatusAggregationServiceTests
 {
+    private static FlightStatusAggregationService BuildService(params IFlightStatusProvider[] providers)
+    {
+        return new FlightStatusAggregationService(
+            providers,
+            Mock.Of<ILogger<FlightStatusAggregationService>>());
+    }
+
+    private static Mock<IFlightStatusProvider> MockProvider(
+        string flightNumber,
+        DateOnly flightDate,
+        FlightStatusEnum status,
+        DateTime lastUpdatedUtc,
+        string providerName,
+        string? gate = null,
+        string? terminal = null,
+        string? delayReason = null,
+        string? message = null)
+    {
+        var mock = new Mock<IFlightStatusProvider>();
+        mock.Setup(x => x.GetFlightStatusAsync(flightNumber, flightDate, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new FlightStatusResult
+            {
+                FlightNumber = flightNumber,
+                FlightDate = flightDate,
+                Status = status,
+                LastUpdatedUtc = lastUpdatedUtc,
+                ProviderName = providerName,
+                Gate = gate,
+                Terminal = terminal,
+                DelayReason = delayReason,
+                Message = message
+            });
+        return mock;
+    }
+
     [Fact]
     public async Task GetAggregatedFlightStatusAsync_MostRecentProviderWins_ReturnsLatestResult()
     {
-        // Arrange
         var flightNumber = "TEST123";
         var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var now = DateTime.UtcNow;
 
-        var providerA = new Mock<IFlightStatusProvider>();
-        providerA.Setup(x => x.GetFlightStatusAsync(flightNumber, flightDate, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new FlightStatusResult
-            {
-                FlightNumber = flightNumber,
-                FlightDate = flightDate,
-                Status = FlightStatusEnum.OnTime,
-                LastUpdatedUtc = DateTime.UtcNow.AddHours(-1),
-                ProviderName = "ProviderA"
-            });
+        var providerA = MockProvider(flightNumber, flightDate, FlightStatusEnum.OnTime, now.AddHours(-1), "ProviderA");
+        var providerB = MockProvider(flightNumber, flightDate, FlightStatusEnum.Delayed, now, "ProviderB");
 
-        var providerB = new Mock<IFlightStatusProvider>();
-        providerB.Setup(x => x.GetFlightStatusAsync(flightNumber, flightDate, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new FlightStatusResult
-            {
-                FlightNumber = flightNumber,
-                FlightDate = flightDate,
-                Status = FlightStatusEnum.Delayed,
-                LastUpdatedUtc = DateTime.UtcNow,
-                ProviderName = "ProviderB"
-            });
+        var service = BuildService(providerA.Object, providerB.Object);
 
-        var logger = Mock.Of<ILogger<FlightStatusAggregationService>>();
-        var service = new FlightStatusAggregationService(new[] { providerA.Object, providerB.Object }, logger);
-
-        // Act
         var result = await service.GetAggregatedFlightStatusAsync(flightNumber, flightDate, CancellationToken.None);
 
-        // Assert
-        result.Should().NotBeNull();
         result.ProviderName.Should().Be("ProviderB");
         result.Status.Should().Be(FlightStatusEnum.Delayed);
     }
@@ -55,7 +67,6 @@ public class FlightStatusAggregationServiceTests
     [Fact]
     public async Task GetAggregatedFlightStatusAsync_NoProviderResults_ReturnsUnknown()
     {
-        // Arrange
         var flightNumber = "TEST456";
         var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -67,14 +78,10 @@ public class FlightStatusAggregationServiceTests
         providerB.Setup(x => x.GetFlightStatusAsync(flightNumber, flightDate, It.IsAny<CancellationToken>()))
             .ReturnsAsync((FlightStatusResult?)null);
 
-        var logger = Mock.Of<ILogger<FlightStatusAggregationService>>();
-        var service = new FlightStatusAggregationService(new[] { providerA.Object, providerB.Object }, logger);
+        var service = BuildService(providerA.Object, providerB.Object);
 
-        // Act
         var result = await service.GetAggregatedFlightStatusAsync(flightNumber, flightDate, CancellationToken.None);
 
-        // Assert
-        result.Should().NotBeNull();
         result.Status.Should().Be(FlightStatusEnum.Unknown);
         result.ProviderName.Should().Be("None");
     }
@@ -82,7 +89,6 @@ public class FlightStatusAggregationServiceTests
     [Fact]
     public async Task GetAggregatedFlightStatusAsync_ProviderFails_ReturnsOtherProviderResult()
     {
-        // Arrange
         var flightNumber = "TEST789";
         var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -90,76 +96,130 @@ public class FlightStatusAggregationServiceTests
         failingProvider.Setup(x => x.GetFlightStatusAsync(flightNumber, flightDate, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Provider failure"));
 
-        var healthyProvider = new Mock<IFlightStatusProvider>();
-        healthyProvider.Setup(x => x.GetFlightStatusAsync(flightNumber, flightDate, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new FlightStatusResult
-            {
-                FlightNumber = flightNumber,
-                FlightDate = flightDate,
-                Status = FlightStatusEnum.OnTime,
-                LastUpdatedUtc = DateTime.UtcNow,
-                ProviderName = "HealthyProvider"
-            });
+        var healthyProvider = MockProvider(flightNumber, flightDate, FlightStatusEnum.OnTime, DateTime.UtcNow, "HealthyProvider");
 
-        var logger = Mock.Of<ILogger<FlightStatusAggregationService>>();
-        var service = new FlightStatusAggregationService(new[] { failingProvider.Object, healthyProvider.Object }, logger);
+        var service = BuildService(failingProvider.Object, healthyProvider.Object);
 
-        // Act
         var result = await service.GetAggregatedFlightStatusAsync(flightNumber, flightDate, CancellationToken.None);
 
-        // Assert
-        result.Should().NotBeNull();
         result.ProviderName.Should().Be("HealthyProvider");
         result.Status.Should().Be(FlightStatusEnum.OnTime);
     }
 
     [Fact]
-    public async Task AeroTrackProvider_ReturnsExpectedStatusMapping()
+    public async Task GetAggregatedFlightStatusAsync_BothProvidersFail_ReturnsUnknown()
     {
-        // Arrange
-        var provider = new AeroTrackProvider(Mock.Of<ILogger<AeroTrackProvider>>());
+        var flightNumber = "TEST999";
         var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        // Act
-        var resultOnTime = await provider.GetFlightStatusAsync("AI202", flightDate, CancellationToken.None);
-        var resultDelayed = await provider.GetFlightStatusAsync("AI101", flightDate, CancellationToken.None);
-        var resultCancelled = await provider.GetFlightStatusAsync("AI303", flightDate, CancellationToken.None);
-        var resultDiverted = await provider.GetFlightStatusAsync("AI404", flightDate, CancellationToken.None);
+        var failingA = new Mock<IFlightStatusProvider>();
+        failingA.Setup(x => x.GetFlightStatusAsync(flightNumber, flightDate, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Provider A down"));
 
-        // Assert
-        resultOnTime.Should().NotBeNull();
-        resultOnTime!.Status.Should().Be(FlightStatusEnum.OnTime);
+        var failingB = new Mock<IFlightStatusProvider>();
+        failingB.Setup(x => x.GetFlightStatusAsync(flightNumber, flightDate, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new TimeoutException("Provider B timed out"));
 
-        resultDelayed.Should().NotBeNull();
-        resultDelayed!.Status.Should().Be(FlightStatusEnum.Delayed);
+        var service = BuildService(failingA.Object, failingB.Object);
 
-        resultCancelled.Should().NotBeNull();
-        resultCancelled!.Status.Should().Be(FlightStatusEnum.Cancelled);
+        var result = await service.GetAggregatedFlightStatusAsync(flightNumber, flightDate, CancellationToken.None);
 
-        resultDiverted.Should().NotBeNull();
-        resultDiverted!.Status.Should().Be(FlightStatusEnum.Diverted);
+        result.Status.Should().Be(FlightStatusEnum.Unknown);
+        result.ProviderName.Should().Be("None");
     }
 
     [Fact]
-    public async Task QuickFlightProvider_ReturnsExpectedStatusMapping()
+    public async Task GetAggregatedFlightStatusAsync_IdenticalTimestamps_RicherDataWins()
     {
-        // Arrange
+        // Tie-breaker rule: when LastUpdatedUtc is identical, the provider with
+        // more populated detail fields (Gate/Terminal/DelayReason/Message) wins.
+        var flightNumber = "TIE100";
+        var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var sameTimestamp = DateTime.UtcNow;
+
+        // Sparse provider: only Message
+        var sparseProvider = MockProvider(
+            flightNumber, flightDate, FlightStatusEnum.Delayed, sameTimestamp,
+            "SparseProvider", message: "Delayed");
+
+        // Rich provider: Gate, Terminal, DelayReason, Message
+        var richProvider = MockProvider(
+            flightNumber, flightDate, FlightStatusEnum.Delayed, sameTimestamp,
+            "RichProvider", gate: "A12", terminal: "T1", delayReason: "Weather", message: "Delayed");
+
+        var service = BuildService(sparseProvider.Object, richProvider.Object);
+
+        var result = await service.GetAggregatedFlightStatusAsync(flightNumber, flightDate, CancellationToken.None);
+
+        result.ProviderName.Should().Be("RichProvider");
+        result.Gate.Should().Be("A12");
+    }
+
+    [Fact]
+    public async Task GetAggregatedFlightStatusAsync_IdenticalTimestampsAndDetailCount_AlphabeticalProviderWins()
+    {
+        // Final tie-breaker: when timestamps AND populated-field counts are equal,
+        // alphabetical provider name (ordinal) wins to guarantee determinism.
+        var flightNumber = "TIE200";
+        var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var sameTimestamp = DateTime.UtcNow;
+
+        var providerZ = MockProvider(flightNumber, flightDate, FlightStatusEnum.OnTime, sameTimestamp, "ZetaProvider", message: "OK");
+        var providerA = MockProvider(flightNumber, flightDate, FlightStatusEnum.OnTime, sameTimestamp, "AlphaProvider", message: "OK");
+
+        var service = BuildService(providerZ.Object, providerA.Object);
+
+        var result = await service.GetAggregatedFlightStatusAsync(flightNumber, flightDate, CancellationToken.None);
+
+        result.ProviderName.Should().Be("AlphaProvider");
+    }
+
+    // ─── Data-driven provider mapping tests ───
+
+    [Theory]
+    [InlineData("AI202", FlightStatusEnum.OnTime)]
+    [InlineData("AI101", FlightStatusEnum.Delayed)]
+    [InlineData("AI303", FlightStatusEnum.Cancelled)]
+    [InlineData("AI404", FlightStatusEnum.Diverted)]
+    public async Task AeroTrackProvider_MapsFlightNumberToExpectedStatus(string flightNumber, FlightStatusEnum expectedStatus)
+    {
+        var provider = new AeroTrackProvider(Mock.Of<ILogger<AeroTrackProvider>>());
+        var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var result = await provider.GetFlightStatusAsync(flightNumber, flightDate, CancellationToken.None);
+
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(expectedStatus);
+    }
+
+    [Theory]
+    [InlineData("QS101", FlightStatusEnum.OnTime)]
+    [InlineData("AI101", FlightStatusEnum.Delayed)]
+    [InlineData("BA303", FlightStatusEnum.Cancelled)]
+    public async Task QuickFlightProvider_MapsFlightNumberToExpectedStatus(string flightNumber, FlightStatusEnum expectedStatus)
+    {
         var provider = new QuickFlightProvider(Mock.Of<ILogger<QuickFlightProvider>>());
         var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        // Act
-        var resultOnTime = await provider.GetFlightStatusAsync("QS101", flightDate, CancellationToken.None);
-        var resultDelayed = await provider.GetFlightStatusAsync("AI101", flightDate, CancellationToken.None);
-        var resultCancelled = await provider.GetFlightStatusAsync("BA303", flightDate, CancellationToken.None);
+        var result = await provider.GetFlightStatusAsync(flightNumber, flightDate, CancellationToken.None);
 
-        // Assert
-        resultOnTime.Should().NotBeNull();
-        resultOnTime!.Status.Should().Be(FlightStatusEnum.OnTime);
+        result.Should().NotBeNull();
+        result!.Status.Should().Be(expectedStatus);
+    }
 
-        resultDelayed.Should().NotBeNull();
-        resultDelayed!.Status.Should().Be(FlightStatusEnum.Delayed);
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task GetAggregatedFlightStatusAsync_InvalidFlightNumber_ReturnsUnknown(string? flightNumber)
+    {
+        var flightDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var dummyProvider = new Mock<IFlightStatusProvider>();
+        var service = BuildService(dummyProvider.Object);
 
-        resultCancelled.Should().NotBeNull();
-        resultCancelled!.Status.Should().Be(FlightStatusEnum.Cancelled);
+        var result = await service.GetAggregatedFlightStatusAsync(flightNumber!, flightDate, CancellationToken.None);
+
+        result.Status.Should().Be(FlightStatusEnum.Unknown);
+        result.ProviderName.Should().Be("None");
     }
 }

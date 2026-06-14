@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FlightStatus.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e7982e830c82bc6bbd0a6106741d5beb2e81dbc1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+10222ad94b139a58099dd2c8b3e8471fcaabc7c3")]
 [assembly: System.Reflection.AssemblyProductAttribute("FlightStatus.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FlightStatus.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -26,10 +26,13 @@ public class FlightStatusAggregationService
     /// Gets aggregated flight status from all providers.
     /// Queries all providers in parallel and returns the most recent result.
     /// </summary>
-    /// <param name="flightNumber">The flight number to query.</param>
-    /// <param name="flightDate">The date of the flight.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Aggregated flight status result, or Unknown if no providers return data.</returns>
+    /// <remarks>
+    /// Selection rules (in order):
+    ///   1. Most recent <see cref="FlightStatusResult.LastUpdatedUtc"/> wins.
+    ///   2. On timestamp tie, the result with more populated detail fields
+    ///      (Gate, Terminal, DelayReason, Message) wins — "richer data" rule.
+    ///   3. On both ties, alphabetical provider name wins for full determinism.
+    /// </remarks>
     public async Task<FlightStatusResult> GetAggregatedFlightStatusAsync(
         string flightNumber,
         DateOnly flightDate,
@@ -48,7 +51,7 @@ public class FlightStatusAggregationService
         var results = await Task.WhenAll(tasks);
 
         // Filter out null results
-        var validResults = results.Where(r => r != null).ToList();
+        var validResults = results.Where(r => r != null).Cast<FlightStatusResult>().ToList();
 
         if (validResults.Count == 0)
         {
@@ -62,10 +65,34 @@ public class FlightStatusAggregationService
             return validResults[0];
         }
 
-        // Multiple results: return the most recently updated
-        var mostRecent = validResults.OrderByDescending(r => r.LastUpdatedUtc).First();
-        _logger.LogInformation("Multiple results found for flight {FlightNumber}, returning most recent from {Provider}", flightNumber, mostRecent.ProviderName);
-        return mostRecent;
+        // Multiple results: apply deterministic selection rules
+        var winner = validResults
+            .OrderByDescending(r => r.LastUpdatedUtc)
+            .ThenByDescending(r => CountPopulatedDetailFields(r))
+            .ThenBy(r => r.ProviderName, StringComparer.Ordinal)
+            .First();
+
+        _logger.LogInformation(
+            "Multiple results found for flight {FlightNumber}, selected provider {Provider} (timestamp {Timestamp:o})",
+            flightNumber,
+            winner.ProviderName,
+            winner.LastUpdatedUtc);
+
+        return winner;
+    }
+
+    /// <summary>
+    /// Counts how many optional detail fields are populated.
+    /// Used as a deterministic tie-breaker when two providers report identical timestamps.
+    /// </summary>
+    private static int CountPopulatedDetailFields(FlightStatusResult result)
+    {
+        var count = 0;
+        if (!string.IsNullOrWhiteSpace(result.Gate)) count++;
+        if (!string.IsNullOrWhiteSpace(result.Terminal)) count++;
+        if (!string.IsNullOrWhiteSpace(result.DelayReason)) count++;
+        if (!string.IsNullOrWhiteSpace(result.Message)) count++;
+        return count;
     }
 
     /// <summary>

@@ -15,6 +15,7 @@ Reason:
 Needed explicit operational requirements and architectural guidance for consistency across codebase.
 
 ---
+
 ## Prompt 2
 
 Purpose:
@@ -62,9 +63,6 @@ Reason:
 Backend scoring is highest for tests right now, so I focused on the exact PDF scenarios before moving to UI.
 
 ---
-
-
-
 
 ## Prompt 5
 
@@ -171,6 +169,7 @@ Standardized prompt entry format used throughout this file.
 Reason:
 Improves traceability and auditability of AI-driven changes.
 
+---
 
 ## Prompt 13
 
@@ -185,5 +184,50 @@ Added comprehensive input validation for null/empty flight numbers and dates, pr
 
 Reason:
 PDF explicitly requires GET /flights/status endpoint with query parameters and 400 validation errors. Tested endpoint successfully - verified aggregation service selects most recent provider (QuickFlight -5min over AeroTrack -10min).
+
+---
+
+## Prompt 14
+
+Purpose:
+Generate Angular standalone frontend with flight status search form and result display.
+
+Accepted:
+Component structure with signals-based state management, reactive form inputs, and HTTP service calling backend API.
+
+Modified:
+Corrected API URL from route-parameter style to query-parameter style (`/flights/status?flightNumber=...&date=...`). Copilot initially generated route parameters which did not match the backend contract.
+
+Reason:
+Frontend must correctly call the Minimal API endpoint. This was the hallucination documented in reflection.md — AI assumed RESTful route params instead of query params.
+
+---
+
+## Prompt 15
+
+Purpose:
+Resolve CORS errors between Angular dev server (localhost:4200) and .NET API (localhost:5000).
+
+Accepted:
+Added `builder.Services.AddCors()` and `app.UseCors()` with `AllowAnyOrigin`, `AllowAnyMethod`, `AllowAnyHeader` policy in Program.cs.
+
+Reason:
+Browser blocked cross-origin requests during local development. Permissive CORS is acceptable for this case study; production would use explicit origin whitelisting.
+
+---
+
+## Prompt 16
+
+Purpose:
+Improve frontend UI with status color-coded badges, provider attribution, and conditional detail display.
+
+Accepted:
+Status badge rendering with color mapping (green/amber/red/grey), conditional gate/terminal/delay-reason cards, and provider name display.
+
+Modified:
+Added null-safe checks for optional fields (gate, terminal, delayReason) using `*ngIf` guards to avoid rendering empty cards.
+
+Reason:
+PDF requires visual status differentiation and display of all available flight details. Status color coding demonstrates full enum coverage across all five states.
 
 ---

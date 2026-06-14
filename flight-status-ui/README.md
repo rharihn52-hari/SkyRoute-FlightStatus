@@ -1,91 +1,141 @@
-# SkyRoute Flight Status
+# SkyRoute Flight Status Aggregator
 
 ## Overview
 
-SkyRoute Flight Status is a full-stack flight status aggregation application built using .NET 8 Minimal APIs and Angular.
-
-The application queries multiple flight status providers (AeroTrack and QuickFlight), normalizes provider-specific responses into a unified model, and selects the most recently updated result.
+SkyRoute Flight Status is a flight status aggregation system that queries multiple upstream providers in parallel, normalizes their responses, and returns the most recently updated result. It demonstrates Clean Architecture, provider abstraction, fault tolerance, and AI-assisted development using GitHub Copilot.
 
 ## Architecture
 
+```
+Angular 21 (Standalone)
+    │
+    ▼
+ASP.NET Core Minimal API (.NET 8)
+    │
+    ▼
+FlightStatusAggregationService
+    │
+    ├──► IFlightStatusProvider (AeroTrack)
+    │
+    └──► IFlightStatusProvider (QuickFlight)
+```
+
+**Key design decisions:**
+
+- **Provider Pattern** — Each provider implements `IFlightStatusProvider`, enabling new sources to be added without modifying aggregation logic (Open/Closed Principle).
+- **Parallel Execution** — Providers are queried concurrently via `Task.WhenAll` for minimum latency.
+- **Latest Wins** — When multiple providers return data, the result with the most recent `LastUpdatedUtc` is selected.
+- **Fault Tolerance** — Individual provider failures are caught and logged; the aggregator continues with remaining results.
+- **Unknown Fallback** — If no provider returns data, a deterministic `Unknown` status is returned (never null).
+
+## API Contract
+
+```
+GET /flights/status?flightNumber={flightNumber}&date={yyyy-MM-dd}
+```
+
+**Parameters:**
+
+| Parameter | Type | Required | Example |
+|---|---|---|---|
+| `flightNumber` | string | Yes | AI101 |
+| `date` | string (ISO date) | Yes | 2026-06-14 |
+
+**Success Response (200):**
+
+```json
+{
+  "flightNumber": "AI101",
+  "flightDate": "2026-06-14",
+  "status": 2,
+  "lastUpdatedUtc": "2026-06-14T09:55:00Z",
+  "providerName": "QuickFlight",
+  "gate": "A12",
+  "terminal": "T1",
+  "delayReason": "Weather",
+  "message": "Flight delayed due to adverse weather conditions"
+}
+```
+
+**Status Enum:**
+
+| Value | Meaning |
+|---|---|
+| 0 | Unknown |
+| 1 | OnTime |
+| 2 | Delayed |
+| 3 | Cancelled |
+| 4 | Diverted |
+
+**Error Response (400):** Returned when `flightNumber` or `date` is missing or invalid.
+
+## Sample Flight Numbers
+
+| Flight | Expected Status | Winning Provider | Gate | Terminal | Delay Reason |
+|---|---|---|---|---|---|
+| AI101 | Delayed | QuickFlight | A12 | T1 | Weather |
+| AI202 | OnTime | AeroTrack | — | — | — |
+| BA303 | Cancelled | QuickFlight | — | — | — |
+| AI404 | Diverted | AeroTrack | — | — | — |
+| XYZ999 | Unknown | None | — | — | — |
+
+## Project Structure
+
+```
+├── src/
+│   ├── FlightStatus.Api/              # Minimal API, DI, CORS, Swagger
+│   ├── FlightStatus.Application/      # Aggregation service, interfaces
+│   ├── FlightStatus.Domain/           # FlightStatusResult, FlightStatus enum
+│   └── FlightStatus.Infrastructure/   # AeroTrack, QuickFlight providers
+├── tests/
+│   └── FlightStatus.Tests/            # xUnit tests (aggregation, mapping, failures)
+├── flight-status-ui/                  # Angular 21 standalone frontend
+├── spec.md                            # Original assignment specification
+├── prompts.md                         # AI prompt log with governance trail
+└── reflection.md                      # AI hallucinations and lessons learned
+```
+
+## How To Run
+
 ### Backend
-
-* .NET 8 Minimal API
-* Clean Architecture principles
-* Dependency Injection
-* Provider abstraction using `IFlightStatusProvider`
-* Aggregation service for provider selection
-* Swagger/OpenAPI support
-
-### Frontend
-
-* Angular
-* Reactive Forms
-* HttpClient
-* Status-based UI rendering
-
-## Provider Selection Logic
-
-The aggregation service queries all providers in parallel.
-
-Rules:
-
-1. If multiple providers return data, select the result with the latest `LastUpdatedUtc`.
-2. If only one provider returns data, use that result.
-3. If no providers return data, return `Unknown`.
-
-## Running the Backend
 
 ```bash
 dotnet run --project src/FlightStatus.Api
 ```
 
-Swagger:
+API starts at `http://localhost:5000`. Swagger UI available at `/swagger`.
 
-http://localhost:5000/swagger
-
-## Running the Frontend
+### Frontend
 
 ```bash
 cd flight-status-ui
 npm install
-npm start
+ng serve
 ```
 
-UI:
+Open `http://localhost:4200`. The UI calls the backend API on port 5000.
 
-http://localhost:4200
-
-## Running Tests
+### Tests
 
 ```bash
-dotnet test tests/FlightStatus.Tests/FlightStatus.Tests.csproj
+dotnet test
 ```
 
-## Sample Flight Numbers
+Runs xUnit tests covering: latest-timestamp selection, unknown fallback, provider failure tolerance, and per-provider status mapping.
 
-| Flight Number | Expected Status |
-| ------------- | --------------- |
-| AI101         | Delayed         |
-| AI202         | OnTime          |
-| BA303         | Cancelled       |
-| AI404         | Diverted        |
-| XYZ999        | Unknown         |
+## AI Tooling
 
-## AI Usage
+- **GitHub Copilot Agent Mode** — Scaffolding, provider generation, test generation.
+- **GitHub Copilot Chat** — Architecture decisions, debugging, documentation.
+- All generated code was manually reviewed, compiled, and validated through unit tests and manual Swagger/UI testing.
+- See `prompts.md` for the full prompt-by-prompt log and `reflection.md` for hallucinations encountered.
 
-GitHub Copilot was used for:
+## Production Considerations
 
-* Solution scaffolding
-* Test generation
-* UI generation
-* Documentation assistance
+If this were a production system, the following would be added:
 
-All generated output was reviewed, validated, and tested manually.
-
-## Future Improvements
-
-* Redis caching
-* Additional providers
-* CI/CD pipeline
-* End-to-end testing
+- **Caching** — Redis cache layer to reduce provider call frequency.
+- **Resilience** — Polly retry/circuit-breaker policies on provider HTTP calls.
+- **Observability** — OpenTelemetry tracing and structured logging.
+- **Health Checks** — `/health` endpoint for orchestrator liveness probes.
+- **CI/CD** — GitHub Actions pipeline for build, test, and deployment.
