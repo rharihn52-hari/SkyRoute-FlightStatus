@@ -40,7 +40,10 @@ public class QuickFlightProvider : IFlightStatusProvider
                 Status = FlightStatusEnum.Delayed,
                 LastUpdatedUtc = DateTime.UtcNow.AddMinutes(-5),
                 ProviderName = "QuickFlight",
-                Message = "Flight running late"
+                Gate = "A12",
+                Terminal = "T1",
+                DelayReason = "Weather",
+                Message = "Flight delayed due to adverse weather conditions"
             },
             "BA303" => new FlightStatusResult
             {

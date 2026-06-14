@@ -1,81 +1,201 @@
-<main class="app-shell">
-  <section class="hero-panel">
-    <div>
-      <p class="eyebrow">Flight status lookup</p>
-      <h1>Track flights, gates, and delay reasons in one place.</h1>
-      <p>Search a flight number and date to get the latest provider status, departure/arrival details, and any delay information.</p>
+<main class="terminal">
+
+  <!-- ── Top bar ── -->
+  <header class="top-bar">
+    <div class="brand">
+      <span class="brand-icon">✈</span>
+      <span class="brand-name">SKYROUTE</span>
     </div>
+    <div class="clock">{{ currentTime() }}</div>
+  </header>
+
+  <!-- ── Radar + Hero ── -->
+  <section class="hero">
+    <div class="radar-wrap">
+      <div class="radar-ring r1"></div>
+      <div class="radar-ring r2"></div>
+      <div class="radar-ring r3"></div>
+      <div class="radar-dot"></div>
+    </div>
+    <h1 class="hero-title">FLIGHT STATUS</h1>
+    <p class="hero-sub">Real-time aggregated status from multiple providers</p>
   </section>
 
-  <section class="search-panel">
-    <form (submit)="searchStatus(); $event.preventDefault()" class="search-card" novalidate>
-      <div class="form-row">
-        <label for="flightNumber">Flight number</label>
+  <!-- ── Search ── -->
+  <section class="search-section">
+    <form (submit)="searchStatus(); $event.preventDefault()" class="search-bar" novalidate>
+      <div class="field">
+        <label for="fn">FLIGHT</label>
         <input
-          id="flightNumber"
+          id="fn"
           type="text"
           autocomplete="off"
-          placeholder="e.g. AI101"
+          spellcheck="false"
+          placeholder="AI101"
           [value]="flightNumber()"
           (input)="flightNumber.set($any($event.target).value)"
-          required
         />
       </div>
-
-      <div class="form-row">
-        <label for="flightDate">Departure date</label>
+      <div class="field">
+        <label for="fd">DATE</label>
         <input
-          id="flightDate"
+          id="fd"
           type="date"
           [value]="flightDate()"
           (input)="flightDate.set($any($event.target).value)"
-          required
         />
       </div>
-
-      <div class="form-actions">
-        <button type="submit" [disabled]="loading()">Check status</button>
-      </div>
+      <button type="submit" class="search-btn" [disabled]="loading()">
+        <span *ngIf="!loading()">CHECK STATUS</span>
+        <span *ngIf="loading()" class="loader-dots">
+          <span>.</span><span>.</span><span>.</span>
+        </span>
+      </button>
     </form>
-
-    <div *ngIf="error()" class="feedback error-panel">{{ error() }}</div>
-
-    <section *ngIf="statusResult() as status" class="result-card">
-      <pre>{{ status | json }}</pre>
-      <div class="result-header">
-        <div>
-          <span [ngClass]="statusClass(status.status)">{{ status.status }}</span>
-          <h2>{{ status.flightNumber }} - {{ status.flightDate }}</h2>
-          <p class="provider-text">Provider: {{ status.providerName }}</p>
-        </div>
-      </div>
-
-      <div class="status-grid">
-        <div class="status-item" *ngIf="status.message">
-          <span class="label">Message</span>
-          <strong>{{ status.message }}</strong>
-        </div>
-
-        <div class="status-item" *ngIf="status.lastUpdatedUtc">
-          <span class="label">Last updated</span>
-          <strong>{{ status.lastUpdatedUtc | date:'short' }}</strong>
-        </div>
-
-        <div class="status-item" *ngIf="status.gate">
-          <span class="label">Gate</span>
-          <strong>{{ status.gate }}</strong>
-        </div>
-
-        <div class="status-item" *ngIf="status.terminal">
-          <span class="label">Terminal</span>
-          <strong>{{ status.terminal }}</strong>
-        </div>
-
-        <div class="status-item wide" *ngIf="status.delayReason">
-          <span class="label">Delay reason</span>
-          <strong>{{ status.delayReason }}</strong>
-        </div>
-      </div>
-    </section>
   </section>
+
+  <!-- ── Error ── -->
+  <div *ngIf="error()" class="error-bar">
+    <span class="error-icon">!</span>
+    {{ error() }}
+  </div>
+
+  <!-- ── Landing animation + Results ── -->
+  <section *ngIf="statusResult() as status" class="results-section">
+
+    <!-- Plane animation overlay -->
+    <div
+      class="anim-stage"
+      #animStage
+      [class.done]="landed()"
+    >
+      <svg
+        id="landingSvg"
+        viewBox="0 0 800 200"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <path
+            id="flightPath"
+            d="M -80,30 C 80,20 250,25 400,60 C 550,95 680,150 760,176"
+            fill="none"
+          />
+        </defs>
+
+        <!-- runway -->
+        <rect x="580" y="178" width="220" height="4" rx="2" fill="#1f2937" />
+        <line x1="600" y1="180" x2="620" y2="180" stroke="#fbbf24" stroke-width="1" opacity="0.6" />
+        <line x1="640" y1="180" x2="660" y2="180" stroke="#fbbf24" stroke-width="1" opacity="0.6" />
+        <line x1="680" y1="180" x2="700" y2="180" stroke="#fbbf24" stroke-width="1" opacity="0.6" />
+        <line x1="720" y1="180" x2="740" y2="180" stroke="#fbbf24" stroke-width="1" opacity="0.6" />
+        <line x1="760" y1="180" x2="780" y2="180" stroke="#fbbf24" stroke-width="1" opacity="0.6" />
+
+        <!-- runway edge lights -->
+        <circle cx="590" cy="184" r="2" fill="#22c55e" opacity="0.7">
+          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.2s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="650" cy="184" r="2" fill="#22c55e" opacity="0.7">
+          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.2s" begin="0.3s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="710" cy="184" r="2" fill="#22c55e" opacity="0.7">
+          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.2s" begin="0.6s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="770" cy="184" r="2" fill="#22c55e" opacity="0.7">
+          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.2s" begin="0.9s" repeatCount="indefinite" />
+        </circle>
+
+        <!-- flight trail -->
+        <path
+          id="trailLine"
+          d="M -80,30 C 80,20 250,25 400,60 C 550,95 680,150 760,176"
+          fill="none"
+          stroke="#38bdf8"
+          stroke-width="1.5"
+          stroke-dasharray="0 9999"
+          opacity="0.4"
+        />
+
+        <!-- plane -->
+        <g id="planeG" transform="translate(-80,30) rotate(0) scale(0.6)">
+          <polygon
+            points="0,-6 18,0 0,6 3,0"
+            fill="#f0f0f0"
+          />
+          <line x1="-4" y1="0" x2="0" y2="-10" stroke="#f0f0f0" stroke-width="1.5" />
+          <line x1="-4" y1="0" x2="0" y2="10" stroke="#f0f0f0" stroke-width="1.5" />
+          <circle cx="20" cy="0" r="1.5" fill="#38bdf8" opacity="0.8">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="0.8s" repeatCount="indefinite" />
+          </circle>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Departure board results (visible after landing) -->
+    <div class="board" [class.visible]="landed()">
+      <div class="scan-line"></div>
+
+      <!-- Board header row -->
+      <div class="board-header">
+        <span>FLIGHT</span>
+        <span>DATE</span>
+        <span>STATUS</span>
+        <span>PROVIDER</span>
+      </div>
+
+      <!-- Board data row -->
+      <div class="board-row">
+        <span class="cell-flight">{{ status.flightNumber }}</span>
+        <span class="cell-date">{{ status.flightDate }}</span>
+        <span class="cell-status">
+          <span class="badge" [ngClass]="statusClass(status.status)">
+            {{ statusLabel(status.status) }}
+          </span>
+        </span>
+        <span class="cell-provider">{{ status.providerName }}</span>
+      </div>
+
+      <!-- Detail cards -->
+      <div class="detail-grid">
+        <div class="detail-card" *ngIf="status.message">
+          <span class="detail-label">MESSAGE</span>
+          <span class="detail-value">{{ status.message }}</span>
+        </div>
+
+        <div class="detail-card" *ngIf="status.lastUpdatedUtc">
+          <span class="detail-label">LAST UPDATED</span>
+          <span class="detail-value">{{ status.lastUpdatedUtc | date:'medium' }}</span>
+        </div>
+
+        <div class="detail-card" *ngIf="status.gate">
+          <span class="detail-label">GATE</span>
+          <span class="detail-value val-highlight">{{ status.gate }}</span>
+        </div>
+
+        <div class="detail-card" *ngIf="status.terminal">
+          <span class="detail-label">TERMINAL</span>
+          <span class="detail-value val-highlight">{{ status.terminal }}</span>
+        </div>
+
+        <div class="detail-card wide" *ngIf="status.delayReason">
+          <span class="detail-label">DELAY REASON</span>
+          <span class="detail-value val-warn">{{ status.delayReason }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Status legend ── -->
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot dot-green"></span>On time</span>
+    <span class="legend-item"><span class="legend-dot dot-amber"></span>Delayed</span>
+    <span class="legend-item"><span class="legend-dot dot-red"></span>Cancelled / Diverted</span>
+    <span class="legend-item"><span class="legend-dot dot-grey"></span>Unknown</span>
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <span>SKYROUTE FLIGHT STATUS AGGREGATOR</span>
+    <span class="footer-dot">·</span>
+    <span>CLEAN ARCHITECTURE · .NET 8 · ANGULAR 21</span>
+  </footer>
 </main>

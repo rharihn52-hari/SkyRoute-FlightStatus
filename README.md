@@ -44,6 +44,16 @@ npm start --prefix flight-status-ui
 
 Open http://localhost:4200 in your browser after the frontend starts.
 
+## Sample Flight Numbers
+
+| Flight Number | Expected Status | Provider |
+|---|---|---|
+| AI101 | Delayed | QuickFlight |
+| AI202 | OnTime | AeroTrack |
+| BA303 | Cancelled | QuickFlight |
+| AI404 | Diverted | AeroTrack |
+| XYZ999 | Unknown | None |
+
 ## Testing
 
 Run unit tests:
