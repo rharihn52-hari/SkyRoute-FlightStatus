@@ -27,6 +27,12 @@ Timestamp selection logic required manual verification.
 
 Added tests to validate latest provider wins.
 ```
+- Hallucination 4
+
+```
+
+CORS issue encountered during Angular integration.
+Resolved by configuring explicit CORS policy.
 
 ## Prompt Refinements
 

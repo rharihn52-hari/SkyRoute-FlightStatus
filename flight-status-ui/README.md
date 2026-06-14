@@ -1,59 +1,91 @@
-# FlightStatusUi
+# SkyRoute Flight Status
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.15.
+## Overview
 
-## Development server
+SkyRoute Flight Status is a full-stack flight status aggregation application built using .NET 8 Minimal APIs and Angular.
 
-To start a local development server, run:
+The application queries multiple flight status providers (AeroTrack and QuickFlight), normalizes provider-specific responses into a unified model, and selects the most recently updated result.
 
-```bash
-ng serve
-```
+## Architecture
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Backend
 
-## Code scaffolding
+* .NET 8 Minimal API
+* Clean Architecture principles
+* Dependency Injection
+* Provider abstraction using `IFlightStatusProvider`
+* Aggregation service for provider selection
+* Swagger/OpenAPI support
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Frontend
 
-```bash
-ng generate component component-name
-```
+* Angular
+* Reactive Forms
+* HttpClient
+* Status-based UI rendering
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Provider Selection Logic
 
-```bash
-ng generate --help
-```
+The aggregation service queries all providers in parallel.
 
-## Building
+Rules:
 
-To build the project run:
+1. If multiple providers return data, select the result with the latest `LastUpdatedUtc`.
+2. If only one provider returns data, use that result.
+3. If no providers return data, return `Unknown`.
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Running the Backend
 
 ```bash
-ng test
+dotnet run --project src/FlightStatus.Api
 ```
 
-## Running end-to-end tests
+Swagger:
 
-For end-to-end (e2e) testing, run:
+http://localhost:5000/swagger
+
+## Running the Frontend
 
 ```bash
-ng e2e
+cd flight-status-ui
+npm install
+npm start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+UI:
 
-## Additional Resources
+http://localhost:4200
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Running Tests
+
+```bash
+dotnet test tests/FlightStatus.Tests/FlightStatus.Tests.csproj
+```
+
+## Sample Flight Numbers
+
+| Flight Number | Expected Status |
+| ------------- | --------------- |
+| AI101         | Delayed         |
+| AI202         | OnTime          |
+| BA303         | Cancelled       |
+| AI404         | Diverted        |
+| XYZ999        | Unknown         |
+
+## AI Usage
+
+GitHub Copilot was used for:
+
+* Solution scaffolding
+* Test generation
+* UI generation
+* Documentation assistance
+
+All generated output was reviewed, validated, and tested manually.
+
+## Future Improvements
+
+* Redis caching
+* Additional providers
+* CI/CD pipeline
+* End-to-end testing
